@@ -6,8 +6,10 @@
 //#define EMITTER_PIN             13  // LED emisor
 
 // pines sensores de A0 a A7
-QTRSensorsAnalog qtra((unsigned char[]) {A1, A2, A3, A4, A5, A6, A7}, 
-  NUM_SENSORS, NUM_SAMPLES_PER_SENSOR);
+QTRSensorsAnalog qtra((unsigned char[]) {
+  A1, A2, A3, A4, A5, A6, A7
+},
+NUM_SENSORS, NUM_SAMPLES_PER_SENSOR);
 unsigned int sensorValues[NUM_SENSORS];
 //________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -44,19 +46,19 @@ int LAST = 0; // error anterior
 float vel; // velocidad
 
 //velocidad para la line recta
-int recto_a = 200; 
-int recto_b = 200; 
+int recto_a = 200;
+int recto_b = 200;
 //_______________________________________________________________________________________________________________________________________________________________________________________________________
 
 void setup()
 {
- 
+
   pinMode(LED_BUILTIN, OUTPUT);
 
   pinMode (bin_2, OUTPUT);
   pinMode (bin_1, OUTPUT);
 
-  
+
   pinMode (ain_2, OUTPUT);
   pinMode (ain_1, OUTPUT);
 
@@ -65,13 +67,13 @@ void setup()
 
   //_______________________________________________________________________________________________________________________________________________________________________________________________________
   //////calibracion//////
-  
+
   delay(500);
   digitalWrite(LED_BUILTIN, HIGH);    // turn on Arduino's LED to indicate we are in calibration mode
   for (int i = 0; i < 200; i++)  // make the calibration take about 10 seconds
   {
     qtra.calibrate();// reads all sensors 10 times at 2.5 ms per six sensors (i.e. ~25 ms per call)
- 
+
   }
   digitalWrite(LED_BUILTIN, LOW);     // turn off Arduino's LED to indicate we are through with calibration
 
@@ -83,7 +85,7 @@ void setup()
     Serial.print(' ');
   }
   Serial.println();
-  
+
   // print the calibration maximum values measured when emitters were on
   for (int i = 0; i < NUM_SENSORS; i++)
   {
@@ -92,9 +94,9 @@ void setup()
   }
   Serial.println();
   Serial.println();
-//_______________________________________________________________________________________________________________________________________________________________________________________________________
+  //_______________________________________________________________________________________________________________________________________________________________________________________________________
   ////// configuro el pwm//////
-  
+
   digitalWrite(ain_1, HIGH);
   digitalWrite(ain_2, LOW);
   // se pone el high y low en los pines inversos, ya que cada motor apúnta a lados opuestos
@@ -104,76 +106,81 @@ void setup()
   analogWrite(pwm_a, 0);
   analogWrite(pwm_b, 0);
 
-//_______________________________________________________________________________________________________________________________________________________________________________________________________
+  //_______________________________________________________________________________________________________________________________________________________________________________________________________
 
- est_btn = digitalRead(BTN);
-while(est_btn==1){
   est_btn = digitalRead(BTN);
+  while (est_btn == 1) {
+    est_btn = digitalRead(BTN);
   }
-  while(est_btn==0){
-  est_btn = digitalRead(BTN);
+  while (est_btn == 0) {
+    est_btn = digitalRead(BTN);
   }
 }
-void loop(){
-  
- 
+void loop() {
+
+
   unsigned int position = qtra.readLine(sensorValues, QTR_EMITTERS_ON, 1);// 0 para pista blanca con linea negra, y 1 al revez
 
- // IMPRESION DE LOS VALORES 
+  // IMPRESION DE LOS VALORES
+  /*
+    for(unsigned char i = 0;  i <  NUM_SENSORS ; i++ ){
 
-/* for(unsigned char i = 0;  i <  NUM_SENSORS ; i++ ){
-  
-  Serial.print(sensorValues[i]);
-  Serial.print('\t');
-  
-  }
- */
+    Serial.print(sensorValues[i]);
+    Serial.print('\t');
+
+
+    }
+    Serial.println(" ");
+  */
 
   //Serial.println(position);
-  
- //_______________________________________________________________________________________________________________________________________________________________________________________________________
 
-    P = (position - 3000);//  error
-    //_______________________________________________________________________________________________________________________________________________________________________________________________________
+  //_______________________________________________________________________________________________________________________________________________________________________________________________________
 
-    D = P - LAST; //  derivativa
-    //_______________________________________________________________________________________________________________________________________________________________________________________________________
-    I = (P + LAST); // constante integrativa
-    //_______________________________________________________________________________________________________________________________________________________________________________________________________
+  P = (position - 3000);//  error
+  //_______________________________________________________________________________________________________________________________________________________________________________________________________
 
-    ////// formula del contol PID//////
+  D = P - LAST; //  derivativa
+  //_______________________________________________________________________________________________________________________________________________________________________________________________________
+  I = (P + LAST); // constante integrativa
+  //_______________________________________________________________________________________________________________________________________________________________________________________________________
 
-   vel = (P * 0.17) + (D * 0.06) + (I * 0.01 );
+  ////// formula del contol PID//////
 
-//Serial.println("corriendo");
+  vel = (P * 0.32) + (D * 0.06) + (I * 0.01 );
 
-    potencia_a = recto_a + vel ;
-    potencia_b = recto_b - vel ;
-
-//Serial.println(P);
+  // vel = (P * 0.17) + (D * 0.06) + (I * 0.01 );
 
 
-    if (recto_a< 170){
-     recto_a = recto_a +5;
-      recto_b = recto_b +5;
-      }
+  //Serial.println("corriendo");
 
-    if(potencia_a>170){
-      potencia_a = 170;
-    }
-    else if(potencia_a < 0){
-      potencia_a = 0;
-    }
-    
-    if(potencia_b>170){
-      potencia_b = 170;
-    }
-    else if(potencia_b < 0){
-      potencia_b = 0;
-    }
+  potencia_a = recto_a + vel ;
+  potencia_b = recto_b - vel ;
 
-    analogWrite(pwm_a, potencia_b);
-    analogWrite(pwm_b, potencia_a);
+  //Serial.println(P);
+
+
  
-    LAST = P;
+  if (potencia_a > 170) {
+    potencia_a = 170;
+  }
+  else if (potencia_a < 0) { if (recto_a < 170) {
+    recto_a = recto_a + 5;
+    recto_b = recto_b + 5;
+  }
+
+    potencia_a = 0;
+  }
+
+  if (potencia_b > 170) {
+    potencia_b = 170;
+  }
+  else if (potencia_b < 0) {
+    potencia_b = 0;
+  }
+
+  analogWrite(pwm_a, potencia_b);
+  analogWrite(pwm_b, potencia_a);
+
+  LAST = P;
 }
