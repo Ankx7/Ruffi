@@ -45,8 +45,8 @@ int LAST = 0; // error anterior
 float vel; // velocidad
 
 //velocidad para la line recta
-int recto_a = 180;
-int recto_b = 180;
+int recto_a = 210;
+int recto_b = 210;
 //_______________________________________________________________________________________________________________________________________________________________________________________________________
 
 void setup()
@@ -153,7 +153,7 @@ void loop() {
     recto_b = 90;
   }*/
   ////// formula del contol PID//////
-  vel = (P * 0.7 ) + (D * 0.88) + (I * 0.01 );
+  vel = (P * 0.7) + (D * 0.89) + (I * 0.01 );
   //vel = (P * 0.2) + (D * 0.955) + (I * 0.01 );
   //vel = (P * 0.21) + (D * 0.955) + (I * 0.01 );
   //vel = (P * 0.22) + (D * 0.95) + (I * 0.01 );
@@ -172,11 +172,11 @@ void loop() {
 
 
 
-  if (potencia_a > 180) {
-    potencia_a = 180;
+  if (potencia_a > 210) {
+    potencia_a = 210;
   }
   else if (potencia_a < 0) {
-    if (recto_a < 180) {
+    if (recto_a < 210) {
       recto_a = recto_a + 5;
       recto_b = recto_b + 5;
     }
@@ -184,8 +184,8 @@ void loop() {
     potencia_a = 0;
   }
 
-  if (potencia_b > 180) {
-    potencia_b =180;
+  if (potencia_b > 210) {
+    potencia_b = 210;
   }
   else if (potencia_b < 0) {
     potencia_b = 0;
