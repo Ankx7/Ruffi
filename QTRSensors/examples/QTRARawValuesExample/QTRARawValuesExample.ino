@@ -12,13 +12,13 @@
 // monitor as numbers from 0 (maximum reflectance) to 1023 (minimum reflectance).
 
 
-#define NUM_SENSORS             6  // number of sensors used
+#define NUM_SENSORS             8  // number of sensors used
 #define NUM_SAMPLES_PER_SENSOR  4  // average 4 analog samples per sensor reading
 #define EMITTER_PIN             2  // emitter is controlled by digital pin 2
 
 // sensors 0 through 5 are connected to analog inputs 0 through 5, respectively
-QTRSensorsAnalog qtra((unsigned char[]) {0, 1, 2, 3, 4, 5},
-  NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
+QTRSensorsAnalog qtra((unsigned char[]) {A0,A1,A2,A3,A4,A5,A6,A7},
+  NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, 0);
 unsigned int sensorValues[NUM_SENSORS];
 
 
